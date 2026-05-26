@@ -1,0 +1,20 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "mQg7VPW8UxeXi16_W3Gvf"
+uri = "file://artifacts/estate-cafe/public/images/estate-mist.png"
+type = "image"
+title = "Cafe in green coffee plantations"
+
+[[generated]]
+id = "KsS6mkm_mT6-PhrDOMzZs"
+uri = "file://artifacts/estate-cafe/public/images/filter-coffee.png"
+type = "image"
+title = "Filter coffee on rustic wooden table"
+
+[[generated]]
+id = "mYXywtlEv4npd5UJI84jJ"
+uri = "file://artifacts/estate-cafe/public/images/hills-panorama.png"
+type = "image"
+title = "Panoramic view of coffee estate hills"
