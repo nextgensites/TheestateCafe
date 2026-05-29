@@ -175,6 +175,75 @@ export function Hero3D() {
 
       {/* Floating particles */}
       <ParticleCanvas />
+
+      {/* Floating 3D night photo card */}
+      <div
+        style={{
+          position: 'absolute',
+          bottom: '12%',
+          right: '6%',
+          zIndex: 30,
+          width: 'clamp(180px, 22vw, 320px)',
+          aspectRatio: '4/3',
+          transform: `
+            rotateX(${tilt.rx * 1.6}deg)
+            rotateY(${tilt.ry * 1.6}deg)
+            translateX(${tilt.mx * -1.4}px)
+            translateY(${tilt.my * -1.4}px)
+            translateZ(60px)
+          `,
+          transformStyle: 'preserve-3d',
+          transition: 'none',
+          willChange: 'transform',
+          borderRadius: '10px',
+          boxShadow: `
+            0 0 0 1.5px #c9922a,
+            0 0 0 4px rgba(201,146,42,0.18),
+            0 8px 40px rgba(0,0,0,0.7),
+            0 0 28px rgba(201,146,42,0.22)
+          `,
+          overflow: 'hidden',
+        }}
+      >
+        <img
+          src="/images/hero-float.jpg"
+          alt="The Estate Cafe at night"
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            display: 'block',
+            filter: 'brightness(0.88) saturate(1.15)',
+          }}
+        />
+        {/* Gold label strip */}
+        <div style={{
+          position: 'absolute',
+          bottom: 0, left: 0, right: 0,
+          padding: '8px 12px',
+          background: 'linear-gradient(to top, rgba(0,0,0,0.82) 0%, transparent 100%)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
+        }}>
+          <span style={{
+            width: 6, height: 6,
+            borderRadius: '50%',
+            background: '#c9922a',
+            display: 'inline-block',
+            flexShrink: 0,
+          }} />
+          <span style={{
+            color: '#e8b84b',
+            fontSize: 'clamp(9px, 1.1vw, 12px)',
+            fontFamily: 'Georgia, serif',
+            letterSpacing: '0.12em',
+            textTransform: 'uppercase',
+          }}>
+            Chikkamagaluru, Karnataka
+          </span>
+        </div>
+      </div>
     </div>
   );
 }
