@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Hero3D } from '@/components/Hero3D';
+import { Hero3D, HeroFloatCard } from '@/components/Hero3D';
 import { MapPin, Clock, Phone, ArrowRight, Instagram, Facebook, Twitter } from 'lucide-react';
 import { Gallery } from '@/components/Gallery';
 
@@ -19,6 +19,41 @@ const GOLD_LIGHT = '#e8b84b';
 const GOLD_DIM = '#9a6e1f';
 
 export default function Home() {
+  const heroRef = useRef<HTMLElement>(null);
+  const targetRef = useRef({ rx: 0, ry: 0, mx: 0, my: 0 });
+  const currentRef = useRef({ rx: 0, ry: 0, mx: 0, my: 0 });
+  const frameRef = useRef<number>(0);
+  const [tilt, setTilt] = useState({ rx: 0, ry: 0, mx: 0, my: 0 });
+
+  const onHeroMouseMove = useCallback((e: React.MouseEvent<HTMLElement>) => {
+    const rect = heroRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const nx = ((e.clientX - rect.left) / rect.width  - 0.5) * 2;
+    const ny = ((e.clientY - rect.top)  / rect.height - 0.5) * 2;
+    targetRef.current = { rx: -ny * 8, ry: nx * 8, mx: nx * 18, my: ny * 10 };
+  }, []);
+
+  const onHeroMouseLeave = useCallback(() => {
+    targetRef.current = { rx: 0, ry: 0, mx: 0, my: 0 };
+  }, []);
+
+  useEffect(() => {
+    const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+    const tick = () => {
+      const c = currentRef.current;
+      const t = targetRef.current;
+      const next = {
+        rx: lerp(c.rx, t.rx, 0.06), ry: lerp(c.ry, t.ry, 0.06),
+        mx: lerp(c.mx, t.mx, 0.06), my: lerp(c.my, t.my, 0.06),
+      };
+      currentRef.current = next;
+      setTilt({ ...next });
+      frameRef.current = requestAnimationFrame(tick);
+    };
+    tick();
+    return () => cancelAnimationFrame(frameRef.current);
+  }, []);
+
   return (
     <div className="min-h-screen font-sans" style={{ background: '#080808', color: '#e8dcc8' }}>
 
@@ -51,9 +86,15 @@ export default function Home() {
       </nav>
 
       {/* ── HERO ── */}
-      <section className="relative h-screen w-full flex items-center justify-center overflow-hidden">
+      <section
+        ref={heroRef}
+        className="relative h-screen w-full flex flex-col items-center overflow-hidden"
+        style={{ perspective: '900px' }}
+        onMouseMove={onHeroMouseMove}
+        onMouseLeave={onHeroMouseLeave}
+      >
         <Hero3D />
-        <div className="relative z-10 text-center px-6 max-w-5xl mx-auto flex flex-col items-center">
+        <div className="relative z-10 text-center px-6 max-w-5xl mx-auto flex flex-col items-center" style={{ paddingTop: '5vh' }}>
           <motion.span
             initial={{ opacity: 0, letterSpacing: '0.1em' }}
             animate={{ opacity: 1, letterSpacing: '0.35em' }}
@@ -78,7 +119,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.8, ease: 'easeOut' }}
-            className="text-base md:text-lg font-light max-w-xl mx-auto mb-12 leading-relaxed"
+            className="text-base md:text-lg font-light max-w-xl mx-auto mb-6 leading-relaxed"
             style={{ color: 'rgba(232,220,200,0.65)' }}
           >
             Honest Malnad food and estate-grown filter coffee, served in a restored planter's bungalow surrounded by mist and sprawling greenery.
@@ -97,14 +138,13 @@ export default function Home() {
           </motion.div>
         </div>
 
-        <motion.div
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.2, duration: 1 }}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3"
-          style={{ color: 'rgba(201,146,42,0.45)' }}
-        >
-          <span className="text-[9px] uppercase tracking-[0.3em]">Scroll</span>
-          <div className="w-px h-10" style={{ background: 'linear-gradient(to bottom, rgba(201,146,42,0.5), transparent)' }} />
-        </motion.div>
+        {/* Floating 3D photo — in flow below text */}
+        <div className="relative z-20" style={{ marginTop: '1.5vh', flexShrink: 0 }}>
+          <HeroFloatCard
+            tiltRx={tilt.rx} tiltRy={tilt.ry}
+            tiltMx={tilt.mx} tiltMy={tilt.my}
+          />
+        </div>
       </section>
 
       {/* ── GOLD DIVIDER ── */}

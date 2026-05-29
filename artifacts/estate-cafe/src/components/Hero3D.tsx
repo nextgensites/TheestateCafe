@@ -175,75 +175,70 @@ export function Hero3D() {
 
       {/* Floating particles */}
       <ParticleCanvas />
+    </div>
+  );
+}
 
-      {/* Floating 3D photo card — centred */}
-      <div
+export function HeroFloatCard({ tiltRx, tiltRy, tiltMx, tiltMy }: {
+  tiltRx: number; tiltRy: number; tiltMx: number; tiltMy: number;
+}) {
+  return (
+    <div
+      style={{
+        width: 'clamp(230px, 30vw, 420px)',
+        aspectRatio: '16/9',
+        transform: `
+          rotateX(${tiltRx * 1.6}deg)
+          rotateY(${tiltRy * 1.6}deg)
+          translateX(${tiltMx * -1.4}px)
+          translateY(${tiltMy * -1.4}px)
+          translateZ(60px)
+        `,
+        transformStyle: 'preserve-3d',
+        transition: 'none',
+        willChange: 'transform',
+        borderRadius: '10px',
+        boxShadow: `
+          0 0 0 1.5px #c9922a,
+          0 0 0 4px rgba(201,146,42,0.18),
+          0 12px 50px rgba(0,0,0,0.75),
+          0 0 32px rgba(201,146,42,0.22)
+        `,
+        overflow: 'hidden',
+      }}
+    >
+      <img
+        src="/images/hero-float.jpg"
+        alt="The Estate Cafe grounds"
         style={{
-          position: 'absolute',
-          top: '62%',
-          left: '50%',
-          zIndex: 30,
-          width: 'clamp(320px, 52vw, 720px)',
-          aspectRatio: '16/9',
-          transform: `
-            translate(-50%, -50%)
-            rotateX(${tilt.rx * 1.6}deg)
-            rotateY(${tilt.ry * 1.6}deg)
-            translateX(${tilt.mx * -1.4}px)
-            translateY(${tilt.my * -1.4}px)
-            translateZ(60px)
-          `,
-          transformStyle: 'preserve-3d',
-          transition: 'none',
-          willChange: 'transform',
-          borderRadius: '10px',
-          boxShadow: `
-            0 0 0 1.5px #c9922a,
-            0 0 0 4px rgba(201,146,42,0.18),
-            0 8px 40px rgba(0,0,0,0.7),
-            0 0 28px rgba(201,146,42,0.22)
-          `,
-          overflow: 'hidden',
+          width: '100%', height: '100%',
+          objectFit: 'cover',
+          display: 'block',
+          filter: 'brightness(0.88) saturate(1.15)',
         }}
-      >
-        <img
-          src="/images/hero-float.jpg"
-          alt="The Estate Cafe at night"
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            display: 'block',
-            filter: 'brightness(0.88) saturate(1.15)',
-          }}
-        />
-        {/* Gold label strip */}
-        <div style={{
-          position: 'absolute',
-          bottom: 0, left: 0, right: 0,
-          padding: '8px 12px',
-          background: 'linear-gradient(to top, rgba(0,0,0,0.82) 0%, transparent 100%)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px',
+      />
+      <div style={{
+        position: 'absolute',
+        bottom: 0, left: 0, right: 0,
+        padding: '10px 14px',
+        background: 'linear-gradient(to top, rgba(0,0,0,0.82) 0%, transparent 100%)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '7px',
+      }}>
+        <span style={{
+          width: 6, height: 6, borderRadius: '50%',
+          background: '#c9922a', display: 'inline-block', flexShrink: 0,
+        }} />
+        <span style={{
+          color: '#e8b84b',
+          fontSize: 'clamp(9px, 1.1vw, 12px)',
+          fontFamily: 'Georgia, serif',
+          letterSpacing: '0.12em',
+          textTransform: 'uppercase',
         }}>
-          <span style={{
-            width: 6, height: 6,
-            borderRadius: '50%',
-            background: '#c9922a',
-            display: 'inline-block',
-            flexShrink: 0,
-          }} />
-          <span style={{
-            color: '#e8b84b',
-            fontSize: 'clamp(9px, 1.1vw, 12px)',
-            fontFamily: 'Georgia, serif',
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-          }}>
-            Chikkamagaluru, Karnataka
-          </span>
-        </div>
+          Chikkamagaluru, Karnataka
+        </span>
       </div>
     </div>
   );
