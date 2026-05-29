@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Hero3D } from '@/components/Hero3D';
 import { MapPin, Clock, Phone, ArrowRight, Instagram, Facebook, Twitter } from 'lucide-react';
+import { Gallery } from '@/components/Gallery';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
@@ -254,6 +255,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* ── GALLERY ── */}
+      <Gallery />
 
       {/* ── EXPERIENCE ── */}
       <section id="experience" style={{ background: '#0a0a0a', padding: '7rem 1.5rem' }}>
