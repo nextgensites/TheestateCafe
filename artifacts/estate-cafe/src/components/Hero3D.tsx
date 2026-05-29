@@ -179,67 +179,93 @@ export function Hero3D() {
   );
 }
 
+interface CardProps {
+  src: string; alt: string; label: string;
+  width: string; aspectRatio: string;
+  rx: number; ry: number; mx: number; my: number;
+  rotate?: string; translateZ?: number;
+}
+
+function FloatCard({ src, alt, label, width, aspectRatio, rx, ry, mx, my, rotate = '0deg', translateZ = 40 }: CardProps) {
+  return (
+    <div style={{
+      width,
+      aspectRatio,
+      flexShrink: 0,
+      borderRadius: '8px',
+      overflow: 'hidden',
+      boxShadow: `0 0 0 1.2px #c9922a, 0 0 0 3px rgba(201,146,42,0.15), 0 8px 32px rgba(0,0,0,0.7), 0 0 20px rgba(201,146,42,0.18)`,
+      transform: `rotateX(${rx}deg) rotateY(${ry}deg) translateX(${mx}px) translateY(${my}px) translateZ(${translateZ}px) rotate(${rotate})`,
+      transformStyle: 'preserve-3d',
+      willChange: 'transform',
+      position: 'relative',
+    }}>
+      <img src={src} alt={alt} style={{
+        width: '100%', height: '100%', objectFit: 'cover', display: 'block',
+        filter: 'brightness(0.9) saturate(1.1)',
+      }} />
+      <div style={{
+        position: 'absolute', bottom: 0, left: 0, right: 0,
+        padding: '6px 10px',
+        background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%)',
+        display: 'flex', alignItems: 'center', gap: '5px',
+      }}>
+        <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#c9922a', display: 'inline-block', flexShrink: 0 }} />
+        <span style={{ color: '#e8b84b', fontSize: 'clamp(8px, 0.9vw, 11px)', fontFamily: 'Georgia, serif', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+          {label}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 export function HeroFloatCard({ tiltRx, tiltRy, tiltMx, tiltMy }: {
   tiltRx: number; tiltRy: number; tiltMx: number; tiltMy: number;
 }) {
+  const L = 1.8;  // left cards parallax multiplier
+  const C = 1.4;  // center card parallax multiplier
+  const R = 1.6;  // right card parallax multiplier
+
   return (
-    <div
-      style={{
-        width: 'clamp(230px, 30vw, 420px)',
-        aspectRatio: '16/9',
-        transform: `
-          rotateX(${tiltRx * 1.6}deg)
-          rotateY(${tiltRy * 1.6}deg)
-          translateX(${tiltMx * -1.4}px)
-          translateY(${tiltMy * -1.4}px)
-          translateZ(60px)
-        `,
-        transformStyle: 'preserve-3d',
-        transition: 'none',
-        willChange: 'transform',
-        borderRadius: '10px',
-        boxShadow: `
-          0 0 0 1.5px #c9922a,
-          0 0 0 4px rgba(201,146,42,0.18),
-          0 12px 50px rgba(0,0,0,0.75),
-          0 0 32px rgba(201,146,42,0.22)
-        `,
-        overflow: 'hidden',
-      }}
-    >
-      <img
-        src="/images/hero-float.jpg"
-        alt="The Estate Cafe grounds"
-        style={{
-          width: '100%', height: '100%',
-          objectFit: 'cover',
-          display: 'block',
-          filter: 'brightness(0.88) saturate(1.15)',
-        }}
-      />
-      <div style={{
-        position: 'absolute',
-        bottom: 0, left: 0, right: 0,
-        padding: '10px 14px',
-        background: 'linear-gradient(to top, rgba(0,0,0,0.82) 0%, transparent 100%)',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '7px',
-      }}>
-        <span style={{
-          width: 6, height: 6, borderRadius: '50%',
-          background: '#c9922a', display: 'inline-block', flexShrink: 0,
-        }} />
-        <span style={{
-          color: '#e8b84b',
-          fontSize: 'clamp(9px, 1.1vw, 12px)',
-          fontFamily: 'Georgia, serif',
-          letterSpacing: '0.12em',
-          textTransform: 'uppercase',
-        }}>
-          Chikkamagaluru, Karnataka
-        </span>
+    <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: 'clamp(6px, 1vw, 14px)',
+      perspective: '900px',
+    }}>
+
+      {/* LEFT COLUMN — 2 stacked small cards */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(6px, 0.8vw, 10px)', flexShrink: 0 }}>
+        <FloatCard
+          src="/images/hero-card-1.webp" alt="Cafe exterior" label="The Cafe"
+          width="clamp(120px, 15vw, 210px)" aspectRatio="4/3"
+          rx={tiltRx * L} ry={tiltRy * L} mx={tiltMx * -L} my={tiltMy * -L}
+          rotate="-1.5deg" translateZ={55}
+        />
+        <FloatCard
+          src="/images/hero-card-2.webp" alt="The Gazebo" label="The Gazebo"
+          width="clamp(120px, 15vw, 210px)" aspectRatio="4/3"
+          rx={tiltRx * L} ry={tiltRy * L} mx={tiltMx * -L} my={tiltMy * -L}
+          rotate="1.2deg" translateZ={45}
+        />
       </div>
+
+      {/* CENTER — main feature card */}
+      <FloatCard
+        src="/images/hero-float.jpg" alt="Estate at dusk" label="Chikkamagaluru, Karnataka"
+        width="clamp(180px, 24vw, 340px)" aspectRatio="16/9"
+        rx={tiltRx * C} ry={tiltRy * C} mx={tiltMx * -C} my={tiltMy * -C}
+        rotate="0deg" translateZ={70}
+      />
+
+      {/* RIGHT — portrait food photo */}
+      <FloatCard
+        src="/images/hero-card-3.jpg" alt="Breakfast with a view" label="Malnad Breakfast"
+        width="clamp(100px, 13vw, 180px)" aspectRatio="3/4"
+        rx={tiltRx * R} ry={tiltRy * R} mx={tiltMx * -R} my={tiltMy * -R}
+        rotate="1.8deg" translateZ={50}
+      />
+
     </div>
   );
 }
