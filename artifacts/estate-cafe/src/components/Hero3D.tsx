@@ -176,16 +176,17 @@ export function Hero3D() {
       {/* Floating particles */}
       <ParticleCanvas />
 
-      {/* Floating 3D night photo card */}
+      {/* Floating 3D photo card — centred */}
       <div
         style={{
           position: 'absolute',
-          bottom: '12%',
-          right: '6%',
+          top: '50%',
+          left: '50%',
           zIndex: 30,
-          width: 'clamp(180px, 22vw, 320px)',
-          aspectRatio: '4/3',
+          width: 'clamp(260px, 40vw, 580px)',
+          aspectRatio: '16/10',
           transform: `
+            translate(-50%, -50%)
             rotateX(${tilt.rx * 1.6}deg)
             rotateY(${tilt.ry * 1.6}deg)
             translateX(${tilt.mx * -1.4}px)
