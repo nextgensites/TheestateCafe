@@ -180,11 +180,11 @@ export function Hero3D() {
       <div
         style={{
           position: 'absolute',
-          top: '50%',
+          top: '62%',
           left: '50%',
           zIndex: 30,
-          width: 'clamp(260px, 40vw, 580px)',
-          aspectRatio: '16/10',
+          width: 'clamp(320px, 52vw, 720px)',
+          aspectRatio: '16/9',
           transform: `
             translate(-50%, -50%)
             rotateX(${tilt.rx * 1.6}deg)
