@@ -147,7 +147,7 @@ export function Hero3D() {
         }}
       >
         <img
-          src="/images/cafe-night.jpg"
+          src="/images/hero-photo.jpg"
           alt="The Estate Cafe at night"
           style={{
             width: '100%', height: '100%',
