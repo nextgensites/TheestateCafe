@@ -235,16 +235,16 @@ export function HeroFloatCard({ tiltRx, tiltRy, tiltMx, tiltMy }: {
     }}>
 
       {/* LEFT COLUMN — 2 stacked small cards */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(6px, 0.8vw, 10px)', flexShrink: 0 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(5px, 0.6vw, 8px)', flexShrink: 0 }}>
         <FloatCard
           src="/images/hero-card-1.webp" alt="Cafe exterior" label="The Cafe"
-          width="clamp(120px, 15vw, 210px)" aspectRatio="4/3"
+          width="clamp(100px, 12vw, 165px)" aspectRatio="4/3"
           rx={tiltRx * L} ry={tiltRy * L} mx={tiltMx * -L} my={tiltMy * -L}
           rotate="-1.5deg" translateZ={55}
         />
         <FloatCard
           src="/images/hero-card-2.webp" alt="The Gazebo" label="The Gazebo"
-          width="clamp(120px, 15vw, 210px)" aspectRatio="4/3"
+          width="clamp(100px, 12vw, 165px)" aspectRatio="4/3"
           rx={tiltRx * L} ry={tiltRy * L} mx={tiltMx * -L} my={tiltMy * -L}
           rotate="1.2deg" translateZ={45}
         />
@@ -253,7 +253,7 @@ export function HeroFloatCard({ tiltRx, tiltRy, tiltMx, tiltMy }: {
       {/* CENTER — main feature card */}
       <FloatCard
         src="/images/hero-float.jpg" alt="Estate at dusk" label="Chikkamagaluru, Karnataka"
-        width="clamp(180px, 24vw, 340px)" aspectRatio="16/9"
+        width="clamp(160px, 20vw, 280px)" aspectRatio="16/9"
         rx={tiltRx * C} ry={tiltRy * C} mx={tiltMx * -C} my={tiltMy * -C}
         rotate="0deg" translateZ={70}
       />
@@ -261,7 +261,7 @@ export function HeroFloatCard({ tiltRx, tiltRy, tiltMx, tiltMy }: {
       {/* RIGHT — portrait food photo */}
       <FloatCard
         src="/images/hero-card-3.jpg" alt="Breakfast with a view" label="Malnad Breakfast"
-        width="clamp(100px, 13vw, 180px)" aspectRatio="3/4"
+        width="clamp(85px, 10vw, 140px)" aspectRatio="3/4"
         rx={tiltRx * R} ry={tiltRy * R} mx={tiltMx * -R} my={tiltMy * -R}
         rotate="1.8deg" translateZ={50}
       />

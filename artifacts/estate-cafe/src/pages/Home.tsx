@@ -94,32 +94,32 @@ export default function Home() {
         onMouseLeave={onHeroMouseLeave}
       >
         <Hero3D />
-        <div className="relative z-10 text-center px-6 max-w-5xl mx-auto flex flex-col items-center" style={{ paddingTop: '5vh' }}>
+        <div className="relative z-10 text-center px-6 max-w-5xl mx-auto flex flex-col items-center" style={{ paddingTop: 'clamp(70px, 10vh, 90px)' }}>
           <motion.span
             initial={{ opacity: 0, letterSpacing: '0.1em' }}
-            animate={{ opacity: 1, letterSpacing: '0.35em' }}
+            animate={{ opacity: 1, letterSpacing: '0.32em' }}
             transition={{ duration: 1.6, ease: 'easeOut' }}
-            className="block text-xs uppercase mb-6 font-light"
+            className="block text-xs uppercase mb-2 font-light"
             style={{ color: GOLD }}
           >
             Chikkamagaluru, Karnataka
           </motion.span>
 
           <motion.h1
-            initial={{ opacity: 0, y: 28 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.3, delay: 0.4, ease: 'easeOut' }}
-            className="font-serif font-medium mb-8"
-            style={{ fontSize: 'clamp(2.8rem, 8vw, 6rem)', lineHeight: 1.1, color: '#f5ecd8', letterSpacing: '-0.01em' }}
+            className="font-serif font-medium mb-3"
+            style={{ fontSize: 'clamp(1.8rem, 4.2vw, 3.2rem)', lineHeight: 1.15, color: '#f5ecd8', letterSpacing: '-0.01em' }}
           >
             A Slow Breath in<br />the Coffee Hills
           </motion.h1>
 
           <motion.p
-            initial={{ opacity: 0, y: 18 }}
+            initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.8, ease: 'easeOut' }}
-            className="text-base md:text-lg font-light max-w-xl mx-auto mb-6 leading-relaxed"
+            className="text-sm font-light max-w-lg mx-auto mb-3 leading-relaxed"
             style={{ color: 'rgba(232,220,200,0.65)' }}
           >
             Honest Malnad food and estate-grown filter coffee, served in a restored planter's bungalow surrounded by mist and sprawling greenery.
@@ -128,7 +128,7 @@ export default function Home() {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2, duration: 0.8 }}>
             <a
               href="#menu"
-              className="inline-block text-xs tracking-[0.28em] uppercase px-10 py-4 transition-all duration-300"
+              className="inline-block text-xs tracking-[0.28em] uppercase px-8 py-3 transition-all duration-300"
               style={{ background: GOLD, color: '#080808', fontWeight: 600 }}
               onMouseEnter={e => (e.currentTarget.style.background = GOLD_LIGHT)}
               onMouseLeave={e => (e.currentTarget.style.background = GOLD)}
@@ -139,7 +139,7 @@ export default function Home() {
         </div>
 
         {/* Floating 3D photo — in flow below text */}
-        <div className="relative z-20" style={{ marginTop: '1.5vh', flexShrink: 0 }}>
+        <div className="relative z-20" style={{ marginTop: '1vh', flexShrink: 0 }}>
           <HeroFloatCard
             tiltRx={tilt.rx} tiltRy={tilt.ry}
             tiltMx={tilt.mx} tiltMy={tilt.my}
