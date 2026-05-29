@@ -190,14 +190,14 @@ export default function Home() {
                 price: '₹ 250',
               },
               {
-                img: null,
+                img: '/images/menu-breakfast.png',
                 tag: 'Morning Staple',
                 title: 'Malnad Breakfast',
                 desc: 'Soft akki rottis pressed on banana leaves, seasonal bamboo shoot curry, and fresh coconut chutney.',
                 price: '₹ 450',
               },
               {
-                img: null,
+                img: '/images/menu-dinner.png',
                 tag: 'Evening Feast',
                 title: 'Estate Dinner',
                 desc: 'Free-range pepper chicken roasted with estate vines, curry leaves, and cold-pressed coconut oil.',

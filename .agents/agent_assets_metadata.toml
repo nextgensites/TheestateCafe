@@ -18,3 +18,15 @@ id = "mYXywtlEv4npd5UJI84jJ"
 uri = "file://artifacts/estate-cafe/public/images/hills-panorama.png"
 type = "image"
 title = "Panoramic view of coffee estate hills"
+
+[[generated]]
+id = "njGdIglgZGM1qJlLiHOgE"
+uri = "file://attached_assets/generated_images/traditional_south_indian_malnad_9566.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "kawdyPX_fv26QZLhigFsd"
+uri = "file://attached_assets/generated_images/south_indian_pepper_chicken_2a93.png"
+type = "image"
+title = "generated_image"
