@@ -6,14 +6,19 @@ interface Particle {
   color: string; pulse: number; pulseSpeed: number;
 }
 
+// Mix of warm gold fireflies + cool blue-white stars for visionOS feel
 const COLORS = [
-  'rgba(201,139,51,', 'rgba(230,180,90,', 'rgba(255,210,120,',
-  'rgba(160,120,60,', 'rgba(210,160,70,',
+  'rgba(201,139,51,',
+  'rgba(230,180,90,',
+  'rgba(255,255,255,',
+  'rgba(180,200,255,',
+  'rgba(160,120,60,',
+  'rgba(210,230,255,',
 ];
 
 function ParticleCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const rafRef = useRef<number>(0);
+  const rafRef    = useRef<number>(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -45,7 +50,6 @@ function ParticleCanvas() {
 
     const draw = () => {
       ctx.clearRect(0, 0, W, H);
-
       particles.forEach((p, i) => {
         p.x += p.vx; p.y += p.vy; p.pulse += p.pulseSpeed;
         p.opacity += p.opacityDir;
@@ -66,7 +70,6 @@ function ParticleCanvas() {
 
         if (p.y < -20 || p.x < -30 || p.x > W + 30) particles[i] = mkP(false);
       });
-
       rafRef.current = requestAnimationFrame(draw);
     };
     draw();
@@ -80,100 +83,47 @@ function ParticleCanvas() {
   }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="absolute inset-0 w-full h-full z-20"
-      style={{ pointerEvents: 'none' }}
-    />
+    <canvas ref={canvasRef} className="absolute inset-0 w-full h-full z-20" style={{ pointerEvents: 'none' }} />
   );
 }
 
 export function Hero3D() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [tilt, setTilt] = useState({ rx: 0, ry: 0, mx: 0, my: 0 });
-  const frameRef = useRef<number>(0);
-  const targetRef = useRef({ rx: 0, ry: 0, mx: 0, my: 0 });
-  const currentRef = useRef({ rx: 0, ry: 0, mx: 0, my: 0 });
-
-  const onMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = containerRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    const cx = rect.left + rect.width  / 2;
-    const cy = rect.top  + rect.height / 2;
-    const nx = (e.clientX - cx) / (rect.width  / 2); // -1 to 1
-    const ny = (e.clientY - cy) / (rect.height / 2); // -1 to 1
-    targetRef.current = { rx: -ny * 8, ry: nx * 8, mx: nx * 18, my: ny * 10 };
-  }, []);
-
-  const onMouseLeave = useCallback(() => {
-    targetRef.current = { rx: 0, ry: 0, mx: 0, my: 0 };
-  }, []);
-
-  useEffect(() => {
-    const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
-    const animate = () => {
-      const c = currentRef.current;
-      const t = targetRef.current;
-      const next = {
-        rx: lerp(c.rx, t.rx, 0.06),
-        ry: lerp(c.ry, t.ry, 0.06),
-        mx: lerp(c.mx, t.mx, 0.06),
-        my: lerp(c.my, t.my, 0.06),
-      };
-      currentRef.current = next;
-      setTilt({ ...next });
-      frameRef.current = requestAnimationFrame(animate);
-    };
-    animate();
-    return () => cancelAnimationFrame(frameRef.current);
-  }, []);
-
   return (
-    <div
-      ref={containerRef}
-      className="absolute inset-0 z-0 overflow-hidden"
-      style={{ perspective: '900px', background: '#040604' }}
-      onMouseMove={onMouseMove}
-      onMouseLeave={onMouseLeave}
-    >
+    <div className="absolute inset-0 z-0 overflow-hidden" style={{ background: '#03030a' }}>
       {/* 3D photo layer */}
-      <div
-        style={{
-          position: 'absolute', inset: '-6%',
-          transform: `rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg) translateX(${tilt.mx}px) translateY(${tilt.my}px)`,
-          transformStyle: 'preserve-3d',
-          transition: 'none',
-          willChange: 'transform',
-        }}
-      >
+      <div style={{ position: 'absolute', inset: '-6%' }}>
         <img
           src="/images/hero-photo.jpg"
-          alt="The Estate Cafe at night"
+          alt="The Estate Cafe"
           style={{
             width: '100%', height: '100%',
             objectFit: 'cover',
             display: 'block',
-            filter: 'brightness(0.55) saturate(1.2) contrast(1.08)',
+            filter: 'brightness(0.38) saturate(1.1) contrast(1.06)',
           }}
         />
       </div>
 
-      {/* Depth fog — bottom fade to black */}
+      {/* Deep bottom-to-top fade */}
       <div className="absolute inset-0 z-10" style={{
-        background: 'linear-gradient(to bottom, rgba(4,6,4,0.25) 0%, rgba(4,6,4,0.1) 40%, rgba(4,6,4,0.55) 75%, rgba(4,6,4,0.97) 100%)',
+        background: 'linear-gradient(to bottom, rgba(3,3,10,0.3) 0%, rgba(3,3,10,0.05) 35%, rgba(3,3,10,0.6) 72%, rgba(3,3,10,0.98) 100%)',
       }} />
 
-      {/* Vignette edges */}
+      {/* Edge vignette */}
       <div className="absolute inset-0 z-10" style={{
-        background: 'radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,0.72) 100%)',
+        background: 'radial-gradient(ellipse at center, transparent 42%, rgba(3,3,10,0.75) 100%)',
       }} />
 
-      {/* Warm amber center bloom */}
+      {/* Subtle purple center glow (visionOS spatial feel) */}
       <div className="absolute inset-0 z-10" style={{
-        background: 'radial-gradient(ellipse 60% 55% at 52% 48%, rgba(160,90,20,0.18) 0%, transparent 70%)',
+        background: 'radial-gradient(ellipse 55% 50% at 52% 46%, rgba(80,50,180,0.12) 0%, transparent 70%)',
       }} />
 
-      {/* Floating particles */}
+      {/* Warm center bloom */}
+      <div className="absolute inset-0 z-10" style={{
+        background: 'radial-gradient(ellipse 50% 45% at 52% 48%, rgba(140,80,15,0.14) 0%, transparent 70%)',
+      }} />
+
       <ParticleCanvas />
     </div>
   );
@@ -189,29 +139,40 @@ interface CardProps {
 function FloatCard({ src, alt, label, width, aspectRatio, rx, ry, mx, my, rotate = '0deg', translateZ = 40 }: CardProps) {
   return (
     <div style={{
-      width,
-      aspectRatio,
-      flexShrink: 0,
-      borderRadius: '8px',
+      width, aspectRatio, flexShrink: 0,
+      borderRadius: 12,
       overflow: 'hidden',
-      boxShadow: `0 0 0 1.2px #c9922a, 0 0 0 3px rgba(201,146,42,0.15), 0 8px 32px rgba(0,0,0,0.7), 0 0 20px rgba(201,146,42,0.18)`,
+      boxShadow: '0 0 0 1px rgba(255,255,255,0.18), 0 8px 40px rgba(0,0,0,0.65), 0 0 20px rgba(255,255,255,0.04), inset 0 1px 0 rgba(255,255,255,0.12)',
       transform: `rotateX(${rx}deg) rotateY(${ry}deg) translateX(${mx}px) translateY(${my}px) translateZ(${translateZ}px) rotate(${rotate})`,
       transformStyle: 'preserve-3d',
       willChange: 'transform',
       position: 'relative',
+      backdropFilter: 'blur(4px)',
+      WebkitBackdropFilter: 'blur(4px)',
     }}>
       <img src={src} alt={alt} style={{
         width: '100%', height: '100%', objectFit: 'cover', display: 'block',
-        filter: 'brightness(0.9) saturate(1.1)',
+        filter: 'brightness(0.88) saturate(1.1)',
       }} />
+      {/* gradient overlay */}
+      <div style={{
+        position: 'absolute', bottom: 0, left: 0, right: 0,
+        height: '55%',
+        background: 'linear-gradient(to top, rgba(3,3,10,0.85) 0%, transparent 100%)',
+      }} />
+      {/* glass sheen at top */}
+      <div style={{
+        position: 'absolute', top: 0, left: 0, right: 0, height: 1,
+        background: 'linear-gradient(to right, transparent, rgba(255,255,255,0.22), transparent)',
+      }} />
+      {/* label */}
       <div style={{
         position: 'absolute', bottom: 0, left: 0, right: 0,
         padding: '6px 10px',
-        background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%)',
         display: 'flex', alignItems: 'center', gap: '5px',
       }}>
-        <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#c9922a', display: 'inline-block', flexShrink: 0 }} />
-        <span style={{ color: '#e8b84b', fontSize: 'clamp(8px, 0.9vw, 11px)', fontFamily: 'Georgia, serif', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+        <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'rgba(255,255,255,0.7)', display: 'inline-block', flexShrink: 0 }} />
+        <span style={{ color: 'rgba(242,242,247,0.82)', fontSize: 'clamp(7px,0.85vw,10px)', fontFamily: 'system-ui,sans-serif', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
           {label}
         </span>
       </div>
@@ -222,29 +183,24 @@ function FloatCard({ src, alt, label, width, aspectRatio, rx, ry, mx, my, rotate
 export function HeroFloatCard({ tiltRx, tiltRy, tiltMx, tiltMy }: {
   tiltRx: number; tiltRy: number; tiltMx: number; tiltMy: number;
 }) {
-  const L = 1.8;  // left cards parallax multiplier
-  const C = 1.4;  // center card parallax multiplier
-  const R = 1.6;  // right card parallax multiplier
+  const L = 1.8;
+  const C = 1.4;
+  const R = 1.6;
 
   return (
-    <div style={{
-      display: 'flex',
-      alignItems: 'center',
-      gap: 'clamp(6px, 1vw, 14px)',
-      perspective: '900px',
-    }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(6px,1vw,14px)', perspective: '900px' }}>
 
       {/* LEFT COLUMN — 2 stacked small cards */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(5px, 0.6vw, 8px)', flexShrink: 0 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(5px,0.6vw,8px)', flexShrink: 0 }}>
         <FloatCard
           src="/images/hero-card-1.webp" alt="Cafe exterior" label="The Cafe"
-          width="clamp(100px, 12vw, 165px)" aspectRatio="4/3"
+          width="clamp(100px,12vw,165px)" aspectRatio="4/3"
           rx={tiltRx * L} ry={tiltRy * L} mx={tiltMx * -L} my={tiltMy * -L}
           rotate="-1.5deg" translateZ={55}
         />
         <FloatCard
           src="/images/hero-card-2.webp" alt="The Gazebo" label="The Gazebo"
-          width="clamp(100px, 12vw, 165px)" aspectRatio="4/3"
+          width="clamp(100px,12vw,165px)" aspectRatio="4/3"
           rx={tiltRx * L} ry={tiltRy * L} mx={tiltMx * -L} my={tiltMy * -L}
           rotate="1.2deg" translateZ={45}
         />
@@ -253,7 +209,7 @@ export function HeroFloatCard({ tiltRx, tiltRy, tiltMx, tiltMy }: {
       {/* CENTER — main feature card */}
       <FloatCard
         src="/images/hero-float.jpg" alt="Estate at dusk" label="Chikkamagaluru, Karnataka"
-        width="clamp(160px, 20vw, 280px)" aspectRatio="16/9"
+        width="clamp(160px,20vw,280px)" aspectRatio="16/9"
         rx={tiltRx * C} ry={tiltRy * C} mx={tiltMx * -C} my={tiltMy * -C}
         rotate="0deg" translateZ={70}
       />
@@ -261,7 +217,7 @@ export function HeroFloatCard({ tiltRx, tiltRy, tiltMx, tiltMy }: {
       {/* RIGHT — portrait food photo */}
       <FloatCard
         src="/images/hero-card-3.jpg" alt="Breakfast with a view" label="Malnad Breakfast"
-        width="clamp(85px, 10vw, 140px)" aspectRatio="3/4"
+        width="clamp(85px,10vw,140px)" aspectRatio="3/4"
         rx={tiltRx * R} ry={tiltRy * R} mx={tiltMx * -R} my={tiltMy * -R}
         rotate="1.8deg" translateZ={50}
       />

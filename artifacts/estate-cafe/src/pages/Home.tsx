@@ -4,25 +4,41 @@ import { Hero3D, HeroFloatCard } from '@/components/Hero3D';
 import { MapPin, Clock, Phone, ArrowRight, Instagram, Facebook, Twitter } from 'lucide-react';
 import { Gallery } from '@/components/Gallery';
 
+// ── Design tokens ─────────────────────────────────────
+const GLASS     = 'rgba(255,255,255,0.07)';
+const GLASS_MED = 'rgba(255,255,255,0.11)';
+const GLASS_LO  = 'rgba(255,255,255,0.04)';
+const BORDER    = 'rgba(255,255,255,0.10)';
+const BORDER_LT = 'rgba(255,255,255,0.19)';
+const TEXT      = '#f2f2f7';
+const TEXT_DIM  = 'rgba(242,242,247,0.56)';
+const TEXT_FAINT = 'rgba(242,242,247,0.30)';
+const GOLD      = '#d4a843';
+const GOLD_DIM  = 'rgba(212,168,67,0.45)';
+
+type CP = React.CSSProperties;
+const gls = (bg = GLASS, br = BORDER, extra: CP = {}): CP => ({
+  background: bg,
+  backdropFilter: 'blur(24px) saturate(180%)',
+  WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+  border: `1px solid ${br}`,
+  ...extra,
+});
+
 const fadeUp = {
-  hidden: { opacity: 0, y: 40 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.9, ease: 'easeOut' } },
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.85, ease: 'easeOut' } },
 };
-
 const stagger = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.18 } },
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.13 } },
 };
-
-const GOLD = '#c9922a';
-const GOLD_LIGHT = '#e8b84b';
-const GOLD_DIM = '#9a6e1f';
 
 export default function Home() {
-  const heroRef = useRef<HTMLElement>(null);
-  const targetRef = useRef({ rx: 0, ry: 0, mx: 0, my: 0 });
+  const heroRef    = useRef<HTMLElement>(null);
+  const targetRef  = useRef({ rx: 0, ry: 0, mx: 0, my: 0 });
   const currentRef = useRef({ rx: 0, ry: 0, mx: 0, my: 0 });
-  const frameRef = useRef<number>(0);
+  const frameRef   = useRef<number>(0);
   const [tilt, setTilt] = useState({ rx: 0, ry: 0, mx: 0, my: 0 });
 
   const onHeroMouseMove = useCallback((e: React.MouseEvent<HTMLElement>) => {
@@ -40,14 +56,9 @@ export default function Home() {
   useEffect(() => {
     const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
     const tick = () => {
-      const c = currentRef.current;
-      const t = targetRef.current;
-      const next = {
-        rx: lerp(c.rx, t.rx, 0.06), ry: lerp(c.ry, t.ry, 0.06),
-        mx: lerp(c.mx, t.mx, 0.06), my: lerp(c.my, t.my, 0.06),
-      };
-      currentRef.current = next;
-      setTilt({ ...next });
+      const c = currentRef.current; const t = targetRef.current;
+      const n = { rx: lerp(c.rx,t.rx,.06), ry: lerp(c.ry,t.ry,.06), mx: lerp(c.mx,t.mx,.06), my: lerp(c.my,t.my,.06) };
+      currentRef.current = n; setTilt({ ...n });
       frameRef.current = requestAnimationFrame(tick);
     };
     tick();
@@ -55,243 +66,172 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen font-sans" style={{ background: '#080808', color: '#e8dcc8' }}>
+    <div style={{ minHeight: '100vh', fontFamily: 'system-ui,-apple-system,sans-serif', background: '#03030a', color: TEXT, position: 'relative', overflowX: 'hidden' }}>
 
-      {/* ── NAV ── */}
-      <nav
-        className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-8 md:px-16 py-5"
-        style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, transparent 100%)', backdropFilter: 'blur(2px)' }}
-      >
-        <div className="font-serif text-xl font-bold tracking-[0.18em]" style={{ color: GOLD }}>
+      {/* ── AMBIENT GLOWS (fixed behind everything) ── */}
+      <div aria-hidden style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: '-20%', left: '-10%', width: '60vw', height: '60vw', background: 'radial-gradient(circle, rgba(100,55,220,0.13) 0%, transparent 70%)', filter: 'blur(70px)' }} />
+        <div style={{ position: 'absolute', bottom: '-20%', right: '-10%', width: '55vw', height: '55vw', background: 'radial-gradient(circle, rgba(200,125,35,0.09) 0%, transparent 70%)', filter: 'blur(70px)' }} />
+        <div style={{ position: 'absolute', top: '40%', right: '8%', width: '32vw', height: '32vw', background: 'radial-gradient(circle, rgba(40,90,210,0.07) 0%, transparent 70%)', filter: 'blur(50px)' }} />
+      </div>
+
+      {/* ── FLOATING GLASS PILL NAV ── */}
+      <nav style={{
+        position: 'fixed', top: 14, left: '50%', transform: 'translateX(-50%)', zIndex: 50,
+        display: 'flex', alignItems: 'center', gap: 24, padding: '9px 18px 9px 22px',
+        borderRadius: 100, whiteSpace: 'nowrap',
+        ...gls(GLASS_MED, BORDER_LT),
+        boxShadow: '0 8px 48px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.08)',
+      }}>
+        <span style={{ fontFamily: 'Georgia,serif', fontSize: 12, fontWeight: 700, letterSpacing: '0.18em', color: GOLD }}>
           THE ESTATE CAFE
-        </div>
-        <div className="hidden md:flex gap-8 text-xs font-medium tracking-[0.2em] uppercase" style={{ color: 'rgba(232,220,200,0.7)' }}>
-          {['Our Story', 'Menu', 'Experience', 'Visit'].map(l => (
-            <a key={l} href={`#${l.toLowerCase().replace(' ', '-')}`}
-              className="hover:opacity-100 transition-opacity"
-              style={{ color: 'rgba(232,220,200,0.7)' }}
-              onMouseEnter={e => (e.currentTarget.style.color = GOLD_LIGHT)}
-              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(232,220,200,0.7)')}
+        </span>
+        <div style={{ display: 'flex', gap: 20 }}>
+          {[['Our Story','our-story'],['Menu','menu'],['Experience','experience'],['Visit','visit']].map(([l,id]) => (
+            <a key={id} href={`#${id}`}
+              style={{ fontSize: 10, letterSpacing: '0.15em', textTransform: 'uppercase', color: TEXT_DIM, textDecoration: 'none', transition: 'color 0.2s' }}
+              onMouseEnter={e => (e.currentTarget.style.color = TEXT)}
+              onMouseLeave={e => (e.currentTarget.style.color = TEXT_DIM)}
             >{l}</a>
           ))}
         </div>
-        <button
-          className="hidden md:block text-xs tracking-[0.25em] uppercase px-6 py-3 transition-all duration-300"
-          style={{ border: `1px solid ${GOLD_DIM}`, color: GOLD, background: 'transparent' }}
-          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = GOLD; (e.currentTarget as HTMLButtonElement).style.color = '#080808'; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; (e.currentTarget as HTMLButtonElement).style.color = GOLD; }}
-        >
-          Reserve
-        </button>
+        <a href="#visit"
+          style={{ ...gls(GLASS, BORDER_LT), fontSize: 9, letterSpacing: '0.18em', textTransform: 'uppercase', padding: '6px 15px', borderRadius: 100, color: TEXT, textDecoration: 'none', transition: 'background 0.2s' }}
+          onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = GLASS_MED; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = GLASS; }}
+        >Reserve</a>
       </nav>
 
       {/* ── HERO ── */}
       <section
         ref={heroRef}
-        className="relative h-screen w-full flex flex-col items-center overflow-hidden"
-        style={{ perspective: '900px' }}
+        style={{ position: 'relative', height: '100vh', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', overflow: 'hidden', perspective: '900px', zIndex: 1 }}
         onMouseMove={onHeroMouseMove}
         onMouseLeave={onHeroMouseLeave}
       >
         <Hero3D />
-        <div className="relative z-10 text-center px-6 max-w-5xl mx-auto flex flex-col items-center" style={{ paddingTop: 'clamp(70px, 10vh, 90px)' }}>
+        <div style={{ position: 'relative', zIndex: 10, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', maxWidth: 880, padding: '0 24px', paddingTop: 'clamp(70px,10vh,90px)' }}>
           <motion.span
-            initial={{ opacity: 0, letterSpacing: '0.1em' }}
-            animate={{ opacity: 1, letterSpacing: '0.32em' }}
-            transition={{ duration: 1.6, ease: 'easeOut' }}
-            className="block text-xs uppercase mb-2 font-light"
-            style={{ color: GOLD }}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+            transition={{ duration: 1.4, delay: 0.2 }}
+            style={{ ...gls(GLASS_LO, 'rgba(212,168,67,0.28)'), display: 'inline-block', fontSize: 9, letterSpacing: '0.34em', textTransform: 'uppercase', color: GOLD, padding: '5px 16px', borderRadius: 100, marginBottom: 20 }}
           >
             Chikkamagaluru, Karnataka
           </motion.span>
 
           <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.3, delay: 0.4, ease: 'easeOut' }}
-            className="font-serif font-medium mb-3"
-            style={{ fontSize: 'clamp(1.8rem, 4.2vw, 3.2rem)', lineHeight: 1.15, color: '#f5ecd8', letterSpacing: '-0.01em' }}
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.3, delay: 0.4 }}
+            style={{ fontFamily: 'Georgia,serif', fontSize: 'clamp(1.9rem,4.5vw,3.4rem)', lineHeight: 1.15, color: TEXT, fontWeight: 500, letterSpacing: '-0.01em', margin: '0 0 16px' }}
           >
             A Slow Breath in<br />the Coffee Hills
           </motion.h1>
 
           <motion.p
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.8, ease: 'easeOut' }}
-            className="text-sm font-light max-w-lg mx-auto mb-3 leading-relaxed"
-            style={{ color: 'rgba(232,220,200,0.65)' }}
+            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.8 }}
+            style={{ ...gls(GLASS_LO, 'rgba(255,255,255,0.07)'), fontSize: 13, color: TEXT_DIM, lineHeight: 1.75, maxWidth: 440, padding: '10px 20px', borderRadius: 14, margin: '0 0 20px' }}
           >
             Honest Malnad food and estate-grown filter coffee, served in a restored planter's bungalow surrounded by mist and sprawling greenery.
           </motion.p>
 
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2, duration: 0.8 }}>
-            <a
-              href="#menu"
-              className="inline-block text-xs tracking-[0.28em] uppercase px-8 py-3 transition-all duration-300"
-              style={{ background: GOLD, color: '#080808', fontWeight: 600 }}
-              onMouseEnter={e => (e.currentTarget.style.background = GOLD_LIGHT)}
-              onMouseLeave={e => (e.currentTarget.style.background = GOLD)}
+            <a href="#menu"
+              style={{ ...gls(GLASS_MED, BORDER_LT), display: 'inline-block', fontSize: 10, letterSpacing: '0.26em', textTransform: 'uppercase', padding: '11px 30px', borderRadius: 100, color: TEXT, textDecoration: 'none', transition: 'background 0.25s' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(255,255,255,0.17)'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = GLASS_MED; }}
             >
               Discover the Menu
             </a>
           </motion.div>
         </div>
 
-        {/* Floating 3D photo — in flow below text */}
-        <div className="relative z-20" style={{ marginTop: '1vh', flexShrink: 0 }}>
-          <HeroFloatCard
-            tiltRx={tilt.rx} tiltRy={tilt.ry}
-            tiltMx={tilt.mx} tiltMy={tilt.my}
-          />
+        <div style={{ position: 'relative', zIndex: 20, marginTop: '1vh', flexShrink: 0 }}>
+          <HeroFloatCard tiltRx={tilt.rx} tiltRy={tilt.ry} tiltMx={tilt.mx} tiltMy={tilt.my} />
         </div>
       </section>
-
-      {/* ── GOLD DIVIDER ── */}
-      <div className="flex items-center justify-center gap-5 py-10" style={{ background: '#0d0d0d' }}>
-        <div className="h-px flex-1 max-w-xs" style={{ background: `linear-gradient(to right, transparent, ${GOLD_DIM})` }} />
-        <div className="w-2 h-2 rotate-45" style={{ background: GOLD }} />
-        <div className="w-1 h-1 rotate-45" style={{ background: GOLD_DIM }} />
-        <div className="w-2 h-2 rotate-45" style={{ background: GOLD }} />
-        <div className="h-px flex-1 max-w-xs" style={{ background: `linear-gradient(to left, transparent, ${GOLD_DIM})` }} />
-      </div>
 
       {/* ── OUR STORY ── */}
-      <section id="our-story" style={{ background: '#0d0d0d', padding: '7rem 1.5rem' }}>
-        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={fadeUp}
-            className="relative aspect-[4/5] w-full"
-          >
-            <img src="/images/hills-panorama.png" alt="Chikkamagaluru hills" className="w-full h-full object-cover" style={{ filter: 'brightness(0.88) contrast(1.05)' }} />
-            {/* Gold corner accents */}
-            <div className="absolute top-0 left-0 w-8 h-8" style={{ borderTop: `2px solid ${GOLD}`, borderLeft: `2px solid ${GOLD}` }} />
-            <div className="absolute bottom-0 right-0 w-8 h-8" style={{ borderBottom: `2px solid ${GOLD}`, borderRight: `2px solid ${GOLD}` }} />
-          </motion.div>
+      <section id="our-story" style={{ position: 'relative', zIndex: 1, padding: '7rem 2rem' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-60px' }} variants={fadeUp}>
+            <div style={{ ...gls(), borderRadius: 28, padding: 'clamp(2rem,4vw,4rem)', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: '3rem', alignItems: 'center' }}>
+              <div style={{ position: 'relative', aspectRatio: '4/5', borderRadius: 18, overflow: 'hidden' }}>
+                <img src="/images/hills-panorama.png" alt="Chikkamagaluru hills"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.82) contrast(1.05)', display: 'block' }}
+                />
+                <div style={{ position: 'absolute', inset: 0, border: '1px solid rgba(255,255,255,0.08)', borderRadius: 18, pointerEvents: 'none' }} />
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(3,3,10,0.35) 0%, transparent 35%, rgba(3,3,10,0.25) 100%)', pointerEvents: 'none' }} />
+              </div>
 
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={fadeUp}
-            className="flex flex-col justify-center"
-          >
-            <span className="text-xs uppercase tracking-[0.3em] mb-4 font-light" style={{ color: GOLD }}>Our Heritage</span>
-            <h2 className="font-serif text-4xl md:text-5xl mb-5 font-medium leading-tight" style={{ color: '#f5ecd8' }}>Born from<br />the Estate.</h2>
-            <div className="mb-8 flex items-center gap-3">
-              <div className="h-px w-12" style={{ background: GOLD }} />
-              <div className="w-1.5 h-1.5 rotate-45" style={{ background: GOLD }} />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+                <span style={{ fontSize: 9, letterSpacing: '0.34em', textTransform: 'uppercase', color: GOLD }}>Our Heritage</span>
+                <h2 style={{ fontFamily: 'Georgia,serif', fontSize: 'clamp(2rem,4vw,3rem)', color: TEXT, fontWeight: 500, lineHeight: 1.2, margin: 0 }}>Born from<br />the Estate.</h2>
+                <div style={{ height: 1, width: 48, background: `linear-gradient(to right, ${GOLD}, transparent)` }} />
+                <p style={{ fontSize: 14, lineHeight: 1.85, color: TEXT_DIM, margin: 0 }}>
+                  The Estate Cafe wasn't built; it was restored. Originally a 19th-century planter's bungalow, we've kept the timber ceilings, the wide verandas, and the unhurried pace of estate life.
+                </p>
+                <p style={{ fontSize: 14, lineHeight: 1.85, color: TEXT_DIM, margin: 0 }}>
+                  Our coffee is grown on the very hills you look out upon — roasted in small batches, brewed the traditional way. Our food draws from generations of Malnad heritage: spice-rich, earthy, and deeply comforting.
+                </p>
+                <a href="#experience"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase', color: GOLD, textDecoration: 'none' }}
+                >Our Philosophy <ArrowRight size={12} /></a>
+              </div>
             </div>
-            <p className="text-base leading-relaxed mb-5 font-light" style={{ color: 'rgba(232,220,200,0.65)' }}>
-              The Estate Cafe wasn't built; it was restored. Originally a 19th-century planter's bungalow, we've kept the timber ceilings, the wide verandas, and the unhurried pace of estate life.
-            </p>
-            <p className="text-base leading-relaxed mb-10 font-light" style={{ color: 'rgba(232,220,200,0.65)' }}>
-              Our coffee is grown on the very hills you look out upon — roasted in small batches, brewed the traditional way. Our food draws from generations of Malnad heritage: spice-rich, earthy, and deeply comforting.
-            </p>
-            <a href="#experience" className="inline-flex items-center gap-3 text-xs uppercase tracking-[0.2em] font-medium transition-colors"
-              style={{ color: GOLD }}
-              onMouseEnter={e => (e.currentTarget.style.color = GOLD_LIGHT)}
-              onMouseLeave={e => (e.currentTarget.style.color = GOLD)}
-            >
-              Our Philosophy <ArrowRight size={14} />
-            </a>
           </motion.div>
         </div>
       </section>
 
-      {/* ── GOLD DIVIDER ── */}
-      <div className="flex items-center justify-center gap-5 py-8" style={{ background: '#080808' }}>
-        <div className="h-px flex-1 max-w-xs" style={{ background: `linear-gradient(to right, transparent, ${GOLD_DIM})` }} />
-        <div className="w-2 h-2 rotate-45" style={{ background: GOLD }} />
-        <div className="w-1 h-1 rotate-45" style={{ background: GOLD_DIM }} />
-        <div className="w-2 h-2 rotate-45" style={{ background: GOLD }} />
-        <div className="h-px flex-1 max-w-xs" style={{ background: `linear-gradient(to left, transparent, ${GOLD_DIM})` }} />
-      </div>
-
       {/* ── MENU ── */}
-      <section id="menu" style={{ background: '#080808', padding: '7rem 1.5rem' }}>
-        <div className="max-w-7xl mx-auto">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={fadeUp}
-            className="text-center mb-20"
+      <section id="menu" style={{ position: 'relative', zIndex: 1, padding: '2rem 2rem 7rem' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
+            style={{ textAlign: 'center', marginBottom: '3rem' }}
           >
-            <span className="text-xs uppercase tracking-[0.3em] mb-4 block font-light" style={{ color: GOLD }}>Provisions</span>
-            <h2 className="font-serif text-4xl md:text-5xl font-medium mb-6" style={{ color: '#f5ecd8' }}>From the Kitchen</h2>
-            <div className="flex items-center justify-center gap-3">
-              <div className="h-px w-12" style={{ background: GOLD }} />
-              <div className="w-1.5 h-1.5 rotate-45" style={{ background: GOLD }} />
-              <div className="h-px w-12" style={{ background: GOLD }} />
-            </div>
+            <span style={{ fontSize: 9, letterSpacing: '0.34em', textTransform: 'uppercase', color: GOLD, display: 'block', marginBottom: 14 }}>Provisions</span>
+            <h2 style={{ fontFamily: 'Georgia,serif', fontSize: 'clamp(2rem,4vw,3rem)', color: TEXT, fontWeight: 500, margin: 0 }}>From the Kitchen</h2>
           </motion.div>
 
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={stagger}
-            className="grid md:grid-cols-3 gap-8"
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger}
+            style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: 20 }}
           >
             {[
-              {
-                img: '/images/filter-coffee.png',
-                tag: 'Signature Brew',
-                title: 'Estate Filter Coffee',
-                desc: 'Arabica & Peaberry blend grown at 4000ft, roasted over wood-fire, brewed in a traditional brass dabara set.',
-                price: '₹ 250',
-              },
-              {
-                img: '/images/menu-breakfast.png',
-                tag: 'Morning Staple',
-                title: 'Malnad Breakfast',
-                desc: 'Soft akki rottis pressed on banana leaves, seasonal bamboo shoot curry, and fresh coconut chutney.',
-                price: '₹ 450',
-              },
-              {
-                img: '/images/menu-dinner.png',
-                tag: 'Evening Feast',
-                title: 'Estate Dinner',
-                desc: 'Free-range pepper chicken roasted with estate vines, curry leaves, and cold-pressed coconut oil.',
-                price: '₹ 650',
-              },
+              { img: '/images/filter-coffee.png',  tag: 'Signature Brew', title: 'Estate Filter Coffee', desc: 'Arabica & Peaberry blend grown at 4000ft, roasted over wood-fire, brewed in a traditional brass dabara set.',    price: '₹ 250' },
+              { img: '/images/menu-breakfast.png', tag: 'Morning Staple',  title: 'Malnad Breakfast',     desc: 'Soft akki rottis pressed on banana leaves, seasonal bamboo shoot curry, and fresh coconut chutney.',         price: '₹ 450' },
+              { img: '/images/menu-dinner.png',    tag: 'Evening Feast',   title: 'Estate Dinner',        desc: 'Free-range pepper chicken roasted with estate vines, curry leaves, and cold-pressed coconut oil.',         price: '₹ 650' },
             ].map((item, i) => (
               <motion.div key={i} variants={fadeUp}
-                className="group relative flex flex-col overflow-hidden"
-                style={{ background: '#111111', border: `1px solid #2a2010` }}
+                style={{ ...gls(), borderRadius: 20, overflow: 'hidden', display: 'flex', flexDirection: 'column', transition: 'background 0.3s, border-color 0.3s', cursor: 'default' }}
+                onMouseEnter={e => { const d = e.currentTarget as HTMLDivElement; d.style.background = GLASS_MED; d.style.borderColor = BORDER_LT; }}
+                onMouseLeave={e => { const d = e.currentTarget as HTMLDivElement; d.style.background = GLASS; d.style.borderColor = BORDER; }}
               >
-                {/* Gold top line */}
-                <div className="h-[2px] w-0 group-hover:w-full transition-all duration-500" style={{ background: `linear-gradient(to right, ${GOLD_DIM}, ${GOLD})` }} />
-
-                <div className="aspect-[4/3] overflow-hidden" style={{ background: '#1a1508' }}>
-                  {item.img ? (
-                    <img src={item.img} alt={item.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                      style={{ filter: 'brightness(0.85) saturate(1.1)' }}
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center p-8">
-                      <div className="text-center">
-                        <div className="w-8 h-8 rotate-45 mx-auto mb-4" style={{ border: `1px solid ${GOLD_DIM}` }} />
-                        <p className="font-serif text-lg" style={{ color: 'rgba(201,146,42,0.6)' }}>{item.title}</p>
-                      </div>
-                    </div>
-                  )}
+                <div style={{ aspectRatio: '4/3', overflow: 'hidden' }}>
+                  <img src={item.img} alt={item.title}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.85) saturate(1.1)', transition: 'transform 0.6s ease', display: 'block' }}
+                    onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.05)')}
+                    onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
+                  />
                 </div>
-
-                <div className="p-7 flex flex-col flex-1">
-                  <span className="text-[10px] uppercase tracking-[0.25em] mb-3 font-light" style={{ color: GOLD_DIM }}>{item.tag}</span>
-                  <h3 className="font-serif text-xl mb-3 font-medium" style={{ color: '#f0e4cc' }}>{item.title}</h3>
-                  <p className="text-sm leading-relaxed mb-6 flex-1 font-light" style={{ color: 'rgba(232,220,200,0.5)' }}>{item.desc}</p>
-                  <div className="flex items-center justify-between">
-                    <span className="font-mono text-sm" style={{ color: GOLD }}>{item.price}</span>
-                    <div className="w-5 h-px" style={{ background: GOLD_DIM }} />
+                <div style={{ padding: '1.4rem 1.6rem', flex: 1, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <span style={{ fontSize: 8, letterSpacing: '0.32em', textTransform: 'uppercase', color: GOLD }}>{item.tag}</span>
+                  <h3 style={{ fontFamily: 'Georgia,serif', fontSize: 18, color: TEXT, fontWeight: 500, margin: 0 }}>{item.title}</h3>
+                  <p style={{ fontSize: 13, lineHeight: 1.75, color: TEXT_DIM, margin: 0, flex: 1 }}>{item.desc}</p>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 10, borderTop: `1px solid ${BORDER}` }}>
+                    <span style={{ fontFamily: 'monospace', fontSize: 13, color: GOLD }}>{item.price}</span>
+                    <ArrowRight size={13} style={{ color: TEXT_FAINT }} />
                   </div>
                 </div>
-
-                {/* Corner accent */}
-                <div className="absolute bottom-0 right-0 w-5 h-5" style={{ borderBottom: `1px solid ${GOLD_DIM}`, borderRight: `1px solid ${GOLD_DIM}` }} />
               </motion.div>
             ))}
           </motion.div>
 
-          <div className="mt-16 text-center">
+          <div style={{ textAlign: 'center', marginTop: '2.5rem' }}>
             <button
-              className="text-xs tracking-[0.28em] uppercase px-10 py-4 transition-all duration-300"
-              style={{ border: `1px solid ${GOLD_DIM}`, color: GOLD, background: 'transparent' }}
-              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = GOLD; (e.currentTarget as HTMLButtonElement).style.color = '#080808'; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; (e.currentTarget as HTMLButtonElement).style.color = GOLD; }}
-            >
-              View Full Menu
-            </button>
+              style={{ ...gls(GLASS, BORDER_LT), fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase', padding: '11px 32px', borderRadius: 100, color: TEXT, cursor: 'pointer', transition: 'background 0.2s' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = GLASS_MED; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = GLASS; }}
+            >View Full Menu</button>
           </div>
         </div>
       </section>
@@ -300,141 +240,117 @@ export default function Home() {
       <Gallery />
 
       {/* ── EXPERIENCE ── */}
-      <section id="experience" style={{ background: '#0a0a0a', padding: '7rem 1.5rem' }}>
-        <div className="max-w-7xl mx-auto grid md:grid-cols-12 gap-10 items-center">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={fadeUp}
-            className="md:col-span-5 flex flex-col justify-center"
-          >
-            <div className="p-10 md:p-12 relative" style={{ border: `1px solid #1e1608`, background: '#0e0e0e' }}>
-              {/* Gold corner */}
-              <div className="absolute top-0 left-0 w-6 h-6" style={{ borderTop: `2px solid ${GOLD}`, borderLeft: `2px solid ${GOLD}` }} />
-              <div className="absolute bottom-0 right-0 w-6 h-6" style={{ borderBottom: `2px solid ${GOLD}`, borderRight: `2px solid ${GOLD}` }} />
-
-              <span className="text-xs uppercase tracking-[0.3em] mb-4 block font-light" style={{ color: GOLD }}>The Atmosphere</span>
-              <h2 className="font-serif text-3xl md:text-4xl font-medium mb-5 leading-tight" style={{ color: '#f5ecd8' }}>Time moves<br />slower here.</h2>
-              <div className="mb-6 h-px w-10" style={{ background: GOLD }} />
-              <p className="text-sm leading-relaxed mb-5 font-light" style={{ color: 'rgba(232,220,200,0.6)' }}>
+      <section id="experience" style={{ position: 'relative', zIndex: 1, padding: '7rem 2rem' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))', gap: '2rem', alignItems: 'stretch' }}>
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
+            <div style={{ ...gls(), borderRadius: 24, padding: '2.5rem', height: '100%', display: 'flex', flexDirection: 'column', gap: 18, position: 'relative', overflow: 'hidden', boxSizing: 'border-box' }}>
+              <div style={{ position: 'absolute', top: -60, right: -60, width: 200, height: 200, background: `radial-gradient(circle, ${GOLD_DIM} 0%, transparent 70%)`, pointerEvents: 'none' }} />
+              <span style={{ fontSize: 9, letterSpacing: '0.34em', textTransform: 'uppercase', color: GOLD }}>The Atmosphere</span>
+              <h2 style={{ fontFamily: 'Georgia,serif', fontSize: 'clamp(1.6rem,3vw,2.4rem)', color: TEXT, fontWeight: 500, lineHeight: 1.2, margin: 0 }}>Time moves<br />slower here.</h2>
+              <div style={{ height: 1, width: 40, background: GOLD }} />
+              <p style={{ fontSize: 14, lineHeight: 1.85, color: TEXT_DIM, margin: 0 }}>
                 We don't do quick turnarounds. When you claim a table on the veranda, it's yours. Read a book, watch the mist roll over the valley, or simply listen to the rain on the terracotta tiles.
               </p>
-              <p className="text-sm leading-relaxed font-light" style={{ color: 'rgba(232,220,200,0.6)' }}>
+              <p style={{ fontSize: 14, lineHeight: 1.85, color: TEXT_DIM, margin: 0 }}>
                 Warm amber lamps, weathered teakwood, and the constant, comforting scent of roasting coffee and damp earth.
               </p>
             </div>
           </motion.div>
 
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={fadeUp}
-            className="md:col-span-7 relative"
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
+            style={{ ...gls(), borderRadius: 24, overflow: 'hidden', minHeight: 320 }}
           >
-            <div className="aspect-[16/10] w-full relative">
-              <img src="/images/estate-mist.png" alt="Estate in the mist"
-                className="w-full h-full object-cover"
-                style={{ filter: 'brightness(0.82) contrast(1.05)' }}
-              />
-              <div className="absolute top-0 right-0 w-8 h-8" style={{ borderTop: `2px solid ${GOLD}`, borderRight: `2px solid ${GOLD}` }} />
-              <div className="absolute bottom-0 left-0 w-8 h-8" style={{ borderBottom: `2px solid ${GOLD}`, borderLeft: `2px solid ${GOLD}` }} />
-            </div>
+            <img src="/images/estate-mist.png" alt="Estate in the mist"
+              style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.8) contrast(1.05)', display: 'block' }}
+            />
           </motion.div>
         </div>
       </section>
 
-      {/* ── STATS BAND ── */}
-      <div style={{ background: '#0d0900', borderTop: `1px solid #1e1608`, borderBottom: `1px solid #1e1608` }}>
-        <div className="max-w-5xl mx-auto grid grid-cols-3 divide-x" style={{ borderColor: '#1e1608' }}>
+      {/* ── STATS ── */}
+      <div style={{ position: 'relative', zIndex: 1, padding: '0 2rem 5rem' }}>
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger}
+          style={{ maxWidth: 900, margin: '0 auto', ...gls(), borderRadius: 20, display: 'grid', gridTemplateColumns: 'repeat(3,1fr)' }}
+        >
           {[
             { num: '19th', label: 'Century Bungalow' },
             { num: '4000', label: 'ft above sea level' },
             { num: '100%', label: 'Estate-grown coffee' },
           ].map((s, i) => (
-            <div key={i} className="flex flex-col items-center py-10 px-6 text-center">
-              <span className="font-serif text-3xl md:text-4xl font-medium mb-2" style={{ color: GOLD }}>{s.num}</span>
-              <span className="text-xs uppercase tracking-[0.2em] font-light" style={{ color: 'rgba(232,220,200,0.45)' }}>{s.label}</span>
-            </div>
+            <motion.div key={i} variants={fadeUp}
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2.2rem 1rem', textAlign: 'center', borderRight: i < 2 ? `1px solid ${BORDER}` : 'none' }}
+            >
+              <span style={{ fontFamily: 'Georgia,serif', fontSize: 'clamp(1.8rem,3.5vw,2.6rem)', color: GOLD, fontWeight: 500, marginBottom: 6 }}>{s.num}</span>
+              <span style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: TEXT_FAINT }}>{s.label}</span>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
 
       {/* ── VISIT ── */}
-      <section id="visit" style={{ background: '#080808', padding: '7rem 1.5rem' }}>
-        <div className="max-w-5xl mx-auto">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={fadeUp}
-            className="text-center mb-16"
+      <section id="visit" style={{ position: 'relative', zIndex: 1, padding: '5rem 2rem 7rem' }}>
+        <div style={{ maxWidth: 900, margin: '0 auto' }}>
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
+            style={{ textAlign: 'center', marginBottom: '3rem' }}
           >
-            <span className="text-xs uppercase tracking-[0.3em] mb-4 block font-light" style={{ color: GOLD }}>Find Us</span>
-            <h2 className="font-serif text-4xl md:text-5xl font-medium mb-6" style={{ color: '#f5ecd8' }}>Plan Your Visit</h2>
-            <div className="flex items-center justify-center gap-3">
-              <div className="h-px w-12" style={{ background: GOLD }} />
-              <div className="w-1.5 h-1.5 rotate-45" style={{ background: GOLD }} />
-              <div className="h-px w-12" style={{ background: GOLD }} />
-            </div>
-            <p className="text-base mt-8 font-light max-w-xl mx-auto" style={{ color: 'rgba(232,220,200,0.55)' }}>
+            <span style={{ fontSize: 9, letterSpacing: '0.34em', textTransform: 'uppercase', color: GOLD, display: 'block', marginBottom: 14 }}>Find Us</span>
+            <h2 style={{ fontFamily: 'Georgia,serif', fontSize: 'clamp(2rem,4vw,3rem)', color: TEXT, fontWeight: 500, margin: '0 0 14px' }}>Plan Your Visit</h2>
+            <p style={{ fontSize: 14, color: TEXT_DIM, maxWidth: 440, margin: '0 auto' }}>
               We highly recommend reserving a table, especially for weekend visits and larger groups.
             </p>
           </motion.div>
 
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={stagger}
-            className="grid md:grid-cols-3 gap-6 mb-14"
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger}
+            style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 16, marginBottom: '2.5rem' }}
           >
             {[
-              { icon: <MapPin size={20} />, title: 'Location', lines: ['Kaimara Post, Chikmagalur', 'Karnataka 577101', 'India'] },
-              { icon: <Clock size={20} />, title: 'Hours', lines: ['Wed – Mon: 8:00 AM – 8:00 PM', 'Tuesday: Closed'] },
-              { icon: <Phone size={20} />, title: 'Contact', lines: ['+91 98765 43210', 'hello@estatecafe.in'] },
+              { icon: <MapPin size={17} />, title: 'Location', lines: ['Kaimara Post, Chikmagalur','Karnataka 577101'] },
+              { icon: <Clock size={17} />,  title: 'Hours',    lines: ['Wed – Mon: 8 AM – 8 PM','Tuesday: Closed'] },
+              { icon: <Phone size={17} />,  title: 'Contact',  lines: ['+91 98765 43210','hello@estatecafe.in'] },
             ].map((item, i) => (
               <motion.div key={i} variants={fadeUp}
-                className="flex flex-col items-center text-center p-10 relative"
-                style={{ background: '#0e0e0e', border: `1px solid #1e1608` }}
+                style={{ ...gls(), borderRadius: 20, padding: '2rem 1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 12, transition: 'background 0.3s, border-color 0.3s' }}
+                onMouseEnter={e => { const d = e.currentTarget as HTMLDivElement; d.style.background = GLASS_MED; d.style.borderColor = BORDER_LT; }}
+                onMouseLeave={e => { const d = e.currentTarget as HTMLDivElement; d.style.background = GLASS; d.style.borderColor = BORDER; }}
               >
-                <div className="absolute top-0 left-0 w-4 h-4" style={{ borderTop: `1px solid ${GOLD_DIM}`, borderLeft: `1px solid ${GOLD_DIM}` }} />
-                <div className="absolute bottom-0 right-0 w-4 h-4" style={{ borderBottom: `1px solid ${GOLD_DIM}`, borderRight: `1px solid ${GOLD_DIM}` }} />
-                <div className="w-11 h-11 flex items-center justify-center mb-5 rotate-45" style={{ border: `1px solid ${GOLD_DIM}` }}>
-                  <span className="-rotate-45" style={{ color: GOLD }}>{item.icon}</span>
+                <div style={{ ...gls(GLASS_MED, BORDER_LT), width: 44, height: 44, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', color: GOLD, flexShrink: 0 }}>
+                  {item.icon}
                 </div>
-                <h3 className="font-serif text-lg mb-3 font-medium" style={{ color: '#f5ecd8' }}>{item.title}</h3>
-                <p className="text-sm font-light leading-relaxed" style={{ color: 'rgba(232,220,200,0.5)' }}>
+                <h3 style={{ fontFamily: 'Georgia,serif', fontSize: 16, color: TEXT, fontWeight: 500, margin: 0 }}>{item.title}</h3>
+                <p style={{ fontSize: 13, color: TEXT_DIM, lineHeight: 1.75, margin: 0 }}>
                   {item.lines.map((l, j) => <React.Fragment key={j}>{l}{j < item.lines.length - 1 && <br />}</React.Fragment>)}
                 </p>
               </motion.div>
             ))}
           </motion.div>
 
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={fadeUp}
-            className="flex justify-center"
-          >
-            <button
-              className="text-xs tracking-[0.28em] uppercase px-16 py-5 transition-all duration-300 font-semibold"
-              style={{ background: GOLD, color: '#080808' }}
-              onMouseEnter={e => (e.currentTarget.style.background = GOLD_LIGHT)}
-              onMouseLeave={e => (e.currentTarget.style.background = GOLD)}
-            >
-              Book a Table
-            </button>
-          </motion.div>
+          <div style={{ textAlign: 'center' }}>
+            <a href="#visit"
+              style={{ ...gls('rgba(212,168,67,0.12)', 'rgba(212,168,67,0.38)'), display: 'inline-block', fontSize: 10, letterSpacing: '0.24em', textTransform: 'uppercase', padding: '13px 40px', borderRadius: 100, color: GOLD, textDecoration: 'none', fontWeight: 600, transition: 'background 0.25s' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(212,168,67,0.22)'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(212,168,67,0.12)'; }}
+            >Reserve a Table</a>
+          </div>
         </div>
       </section>
 
       {/* ── FOOTER ── */}
-      <footer style={{ background: '#050505', borderTop: `1px solid #1a1408`, padding: '4rem 1.5rem' }}>
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+      <footer style={{ position: 'relative', zIndex: 1, padding: '2rem 2rem', borderTop: `1px solid ${BORDER}` }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
           <div>
-            <div className="font-serif text-xl font-bold tracking-[0.2em] mb-1" style={{ color: GOLD }}>THE ESTATE CAFE</div>
-            <div className="text-xs tracking-[0.2em] uppercase font-light" style={{ color: 'rgba(232,220,200,0.3)' }}>Chikkamagaluru, Karnataka</div>
+            <div style={{ fontFamily: 'Georgia,serif', fontSize: 13, fontWeight: 700, letterSpacing: '0.2em', color: GOLD, marginBottom: 4 }}>THE ESTATE CAFE</div>
+            <div style={{ fontSize: 10, letterSpacing: '0.16em', textTransform: 'uppercase', color: TEXT_FAINT }}>Chikkamagaluru, Karnataka</div>
           </div>
-
-          <div className="flex gap-6">
-            {[<Instagram size={18} />, <Facebook size={18} />, <Twitter size={18} />].map((Icon, i) => (
+          <div style={{ display: 'flex', gap: 8 }}>
+            {([<Instagram size={15} key="ig" />, <Facebook size={15} key="fb" />, <Twitter size={15} key="tw" />]).map((icon, i) => (
               <a key={i} href="#"
-                className="w-9 h-9 flex items-center justify-center rotate-45 transition-all duration-300"
-                style={{ border: `1px solid #2a1f0a`, color: 'rgba(201,146,42,0.5)' }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = GOLD; e.currentTarget.style.color = GOLD; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = '#2a1f0a'; e.currentTarget.style.color = 'rgba(201,146,42,0.5)'; }}
-              >
-                <span className="-rotate-45">{Icon}</span>
-              </a>
+                style={{ ...gls(GLASS, BORDER), width: 36, height: 36, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', color: TEXT_DIM, textDecoration: 'none', transition: 'background 0.2s, color 0.2s' }}
+                onMouseEnter={e => { const a = e.currentTarget as HTMLAnchorElement; a.style.color = TEXT; a.style.background = GLASS_MED; }}
+                onMouseLeave={e => { const a = e.currentTarget as HTMLAnchorElement; a.style.color = TEXT_DIM; a.style.background = GLASS; }}
+              >{icon}</a>
             ))}
           </div>
-
-          <div className="text-xs font-light text-center md:text-right" style={{ color: 'rgba(232,220,200,0.25)' }}>
-            &copy; {new Date().getFullYear()} The Estate Cafe.<br />All rights reserved.
-          </div>
+          <div style={{ fontSize: 11, color: TEXT_FAINT }}>© {new Date().getFullYear()} The Estate Cafe. All rights reserved.</div>
         </div>
       </footer>
     </div>
